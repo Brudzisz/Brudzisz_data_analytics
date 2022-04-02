@@ -1,37 +1,21 @@
 from cmdstanpy import CmdStanModel
 import matplotlib.pyplot as plt
+import pandas as pd
 
-N = 0
-y = []
-
-with open("coin.csv") as file:
-    for line in file:
-        try:
-            outcome = int(line.split(",")[1])
-            y.append(outcome)
-            N += 1
-        except:
-            continue
-
-print(y)
-
-# N = 2
-# y = [1,1]
+coin_csv = pd.read_csv('coin.csv', index_col=0, header=0)
 
 data = {
-    "N": N,
-    "y": y
+    "N": len(coin_csv['Toss_Result']),
+    "y": coin_csv['Toss_Result'].to_list()
 }
 
 model = CmdStanModel(stan_file="stan2.stan")
-
 fit = model.sample(data)
-
 df = fit.draws_pd()
 
-print(df)
+# print(df)
  
-
 bins = 50
 df["theta"].hist(bins = bins)
+plt.title('Theta')
 plt.show()

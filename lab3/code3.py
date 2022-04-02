@@ -1,5 +1,6 @@
 from cmdstanpy import CmdStanModel
 import matplotlib.pyplot as plt
+import pandas as pd
 
 # N = 0
 # y = []
@@ -17,16 +18,28 @@ import matplotlib.pyplot as plt
 # N = 2
 # y = [10, 10]
 
-N = 4
-y = [3, 10, 2, 40]
+# N = 4
+# y = [3, 10, 2, 40]
+
+# data1 = {
+#     "N": N,
+#     "y": y
+# }
+
+# data2 = {
+#     "N": N
+# }
+
+
+normal_csv = pd.read_csv('normal.csv', index_col=0, header=0)
 
 data1 = {
-    "N": N,
-    "y": y
+    "N": len(normal_csv['value']),
+    "y": normal_csv['value'].to_list()
 }
 
 data2 = {
-    "N": N
+    "N": len(normal_csv['value'])
 }
 
 model1 = CmdStanModel(stan_file="stan3.stan")
@@ -41,23 +54,25 @@ df2 = fit2.draws_pd()
 print(df1)
 print(df2)
 
-results1 = df1.drop(df1.columns[:9], 1)
-results2 = df2.drop(df2.columns[:4], 1)
 
 bins = 50
-plt.figure(1)
+plt.subplot(2,1,1)
 df1['sigma'].hist(bins = bins)
-plt.title("Experimental data")
+plt.title("Sigma")
+plt.subplot(2,1,2)
+df1['y_rep[1]'].hist(bins = bins)
+plt.title("y_rep")
+plt.suptitle("With experimental data")
 
-results1.hist(bins = bins)
-plt.title("Experimental data")
 
-plt.figure(3)
+plt.figure(2)
+plt.subplot(2,1,1)
 df2['sigma'].hist(bins=bins)
-plt.title("No experimental data")
-
-results2.hist(bins = bins)
-plt.title("No experimental data")
+plt.title("Sigma")
+plt.subplot(2,1,2)
+df2['y_prior[1]'].hist(bins = bins)
+plt.title("y_prior")
+plt.suptitle("Without experimental data")
 plt.show()
 
 # Conclusion:
